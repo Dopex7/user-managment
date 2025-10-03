@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function UserList() {
-
   const [input, setInput] = useState('');
-  
   const [data, setData] = useState([])
+  const navigate = useNavigate()
+  
+  // bojm fetch userat, i ruajm ne state (input)
   React.useEffect(() => {
     const fetchLocation = async () => {
         await fetch("https://jsonplaceholder.typicode.com/users")
@@ -18,36 +20,46 @@ function UserList() {
     fetchLocation();
   }, []);
 
-  const filteredData = data.filter(user =>
+  // Filtrojm userat nese kan email apo name njejt si ne input
+  const filteredData = data.filter(user => 
     user.name.toLowerCase().includes(input.toLowerCase()) ||
     user.email.toLowerCase().includes(input.toLowerCase())
   );
 
 
-
-  
+  const handleUserClick = (userId) => {
+    navigate(`/user/${userId}`);
+  };
 
   return (
-        <div>
-         <div className="search-bar">
-        <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Search..." />
+        <div className="p-6">
+         <div className="mb-6">
+        <input 
+          type="text" 
+          value={input} 
+          onChange={(e) => setInput(e.target.value)} 
+          placeholder="Search" 
+          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
         </div>
-          <table style={{ border: '1px solid #ccc', borderCollapse: 'collapse', width: '100%', marginTop: '20px' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#f2f2f2' }}>
-                <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'left' }}>Name</th>
-                <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'left' }}>Email</th>
-                <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'left' }}>Company</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.map(user => (
-                <tr key={user.id}>
-                  <td style={{ border: '1px solid #ccc', padding: '8px' }}>{user.name}</td>
-                  <td style={{ border: '1px solid #ccc', padding: '8px' }}>{user.email}</td>
-                  <td style={{ border: '1px solid #ccc', padding: '8px' }}>{user.company.name}</td>
-                </tr>
-              ))}
+       <table className="min-w-full border border-gray-300">
+        <thead>
+        <tr className="bg-gray-100">
+        <th className="text-left py-3 px-4 font-semibold">Name</th>
+         <th className="text-left py-3 px-4 font-semibold">Email</th>
+         <th className="text-left py-3 px-4 font-semibold">Company</th>
+         </tr>
+          </thead>  
+           <tbody>
+          {filteredData.map(user => (
+            <tr key={user.id}
+           onClick={() => handleUserClick(user.id)}
+           className="cursor-pointer hover:bg-gray-50">
+           <td className="py-3 px-4 border-b border-gray-200">{user.name}</td>
+          <td className="py-3 px-4 border-b border-gray-200">{user.email}</td>
+        <td className="py-3 px-4 border-b border-gray-200">{user.company.name}</td>
+            </tr>
+    ))}
             </tbody>
           </table>
         </div>
